@@ -1,0 +1,67 @@
+spring:
+  application:
+    name: zhang-wei-aichat
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+    url: jdbc:mysql://localhost:3307/deepai
+  data:
+    # --- Redis 配置 ---
+    redis:
+      database: 1
+      host: localhost
+      port: 6379
+      timeout: 10s
+      lettuce:
+        pool:
+          max-active: 200
+          max-wait: -1ms
+          max-idle: 10
+          min-idle: 0
+      # 默认的 Redis 容器没有密码，因此移除了认证配置
+
+# --- AI 服务配置 ---
+# 修正了配置项前缀 'ap' -> 'ai'
+ai:
+  api:
+    # 请在这里填入你的 API Key, URL 和模型名称
+    key:
+    url:
+    model:
+    stream: true
+
+# --- Sa-Token 配置 ---
+sa-token:
+  token-name: satoken
+  timeout: 2592000
+  active-timeout: -1
+  is-concurrent: true
+  is-share: true
+  token-style: random-32
+  is-log: true
+  is-read-header: true
+
+# --- 日志配置 ---
+logging:
+  level:
+    cn:
+      dev33:
+        satoken: DEBUG
+
+# --- 服务器配置 ---
+server:
+  port: 2999
+
+# --- RocketMQ 配置 ---
+rocketmq:
+  # 确保这里的 IP 是你电脑的局域网 IP 地址
+  name-server: 127.0.0.1:9876
+  producer:
+    group: t-producer-group
+  consumer:
+    group: t-consumer-group
+
+
+
+

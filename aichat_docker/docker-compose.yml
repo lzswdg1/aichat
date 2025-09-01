@@ -1,0 +1,111 @@
+# version 字段在新版Docker Compose中已不再需要，可以省略
+services:
+  # --- Redis 服务 ---
+  redis:
+    image: redis:6.2
+    container_name: my-app-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      # 【修正】: 使用Docker命名卷 'redis-volume' 来代替主机文件夹挂载
+      - redis-volume:/data
+    networks:
+      - app-network
+
+  # --- MySQL 数据库服务 ---
+  mysql:
+    image: mysql:8.0
+    container_name: my-app-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      # 【重要】: 环境变量创建的数据库名应与 init.sql 脚本中的保持一致
+      # 我已将其从 myapp 修改为 deepai
+      MYSQL_DATABASE: deepai
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: 123456
+    ports:
+      - "3307:3306"
+    volumes:
+      # 【修正】: 使用Docker命名卷 'mysql-volume' 来代替主机文件夹挂载
+      - mysql-volume:/var/lib/mysql
+      # 【说明】: 此处配置保持不变。您需要创建一个名为 'mysql-init' 的文件夹，
+      # 并将我们之前创建的 'init.sql' 文件放入其中。
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+
+  # --- 数据库Web管理界面 (Adminer) ---
+  adminer:
+    image: adminer
+    container_name: my-app-adminer
+    restart: always
+    ports:
+      # 【说明】: Adminer的端口是 8080, 不是 8081
+      - "1080:8080"
+    networks:
+      - app-network
+    depends_on:
+      - mysql
+
+  # --- RocketMQ NameServer 服务 ---
+  namesrv:
+    image: apache/rocketmq:5.1.4
+    container_name: rmq-namesrv
+    restart: always
+    ports:
+      - "9876:9876"
+    volumes:
+      - ./data/namesrv/logs:/home/rocketmq/logs
+    networks:
+      - app-network
+    command: sh mqnamesrv
+
+  # --- RocketMQ Broker 服务 ---
+  broker:
+    image: apache/rocketmq:5.1.4
+    container_name: rmq-broker
+    restart: always
+    ports:
+      - "10909:10909"
+      - "10911:10911"
+    volumes:
+      - ./data/broker/logs:/home/rocketmq/logs
+      - ./data/broker/store:/home/rocketmq/store
+      - ./broker.conf:/home/rocketmq/rocketmq-5.1.4/conf/broker.conf
+    command: sh mqbroker -c /home/rocketmq/rocketmq-5.1.4/conf/broker.conf
+    networks:
+      - app-network
+    depends_on:
+      - namesrv
+
+  # --- RocketMQ Dashboard 管理界面 ---
+  dashboard:
+    image: apacherocketmq/rocketmq-dashboard:1.0.0
+    container_name: rmq-dashboard
+    restart: always
+    ports:
+      - "1090:8080"
+    environment:
+      # 【修正】: 环境变量的值应该为 'namesrv:9876'，而不是 'rmq-namesrv:9876'
+      # 因为服务名称是 'namesrv'
+      - NAMESRV_ADDR=namesrv:9876
+    networks:
+      - app-network
+    depends_on:
+      - namesrv
+
+# --- 统一网络定义 ---
+networks:
+  app-network:
+    name: my-app-services-network
+
+# 【修正】: 在这里完整声明我们要使用的命名卷
+volumes:
+  redis-volume:
+  mysql-volume:
+
+
+
+

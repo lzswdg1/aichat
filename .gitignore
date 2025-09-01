@@ -1,0 +1,74 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+ ===============================================================
+ IntelliJ IDEA 專案檔案
+ ===============================================================
+.idea/
+*.iml
+*.iws
+
+# ===============================================================
+# Maven 相關檔案
+# ===============================================================
+# 編譯輸出目錄
+target/
+
+# Maven 在執行 mvn release:prepare 時產生的檔案
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+
+# ===============================================================
+# 日誌與臨時檔案
+# ===============================================================
+# 所有 .log 結尾的日誌檔案
+*.log
+# 所有 .tmp 結尾的暫存檔案
+*.tmp
+
+# ===============================================================
+# 作業系統相關檔案
+# ===============================================================
+.DS_Store
+Thumbs.db
+
+# ===============================================================
+# 執行時產生的檔案
+# ===============================================================
+# Java 虛擬機器崩潰時的錯誤報告
+hs_err_pid*
